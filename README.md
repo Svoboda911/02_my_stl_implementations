@@ -1,4 +1,4 @@
-# MyVector — Custom C++ Dynamic Array
+# MyVector - Custom C++ Dynamic Array
 
 A personal C++ project implementing a simplified version of `std::vector` from scratch.
 
