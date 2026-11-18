@@ -1,0 +1,3 @@
+C:/Users/kadot/Desktop/Folder/cpp_learning/06_stl/MyVector/build/CMakeFiles/MyVector.dir
+C:/Users/kadot/Desktop/Folder/cpp_learning/06_stl/MyVector/build/CMakeFiles/edit_cache.dir
+C:/Users/kadot/Desktop/Folder/cpp_learning/06_stl/MyVector/build/CMakeFiles/rebuild_cache.dir
