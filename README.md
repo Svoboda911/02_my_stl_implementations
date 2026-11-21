@@ -45,6 +45,26 @@ This project explores several important C++ concepts:
 - Perfect forwarding and `std::forward`
 - Exception safety and resource cleanup
 
+## Rule of Three
+
+Implemented the Rule of Three to ensure proper resource management and object lifetime control.
+The container provides:
+| `Destructor (~MyVector)` | — destroys all constructed elements and releases allocated memory. |
+| `Copy Constructor` | — performs deep copying by allocating independent memory and copy-constructing each element. |
+| `Copy Assignment Operator (operator=)` | — replaces the contents of an existing container with a deep copy of another container. |
+
+## Key Concepts
+- Deep copying and independent memory ownership.
+- Manual object lifetime management using std::allocator_traits.
+- Raw memory allocation and deallocation.
+- Exception safety during element construction.
+- Self-assignment protection.
+- Proper cleanup of partially constructed objects when exceptions occur.
+
+## Exception Safety
+The copy operations are designed to prevent memory leaks and preserve the original container state if element copying fails.
+Goal: Understand and implement the resource management principles behind standard C++ containers rather than relying on ready-made container implementations.
+
 ## Example Usage
 
 ```cpp
