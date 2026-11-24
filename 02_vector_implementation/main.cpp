@@ -15,16 +15,13 @@ struct Human {
 int main() {
     MyVector<int> a = {1, 2, 3, 4, 5};
 
-    MyVector<int> b(a);
+    int x = 2;
+
+    a.push_back(5); // rvalue
+    a.push_back(x); // lvalue
 
     for (int i = 0; i < a.size(); i++) {
         std::cout << a[i] << std::endl;
-    }
-
-    // b = a; // copy assignment
-
-    for (int i = 0; i < b.size(); i++) {
-        std::cout << b[i] << std::endl;
     }
 
     // emplace_back

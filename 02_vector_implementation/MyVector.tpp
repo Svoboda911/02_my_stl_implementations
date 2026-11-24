@@ -166,14 +166,14 @@ T& MyVector<T, Alloc>::operator[](std::size_t index) {
     return data[index];
 }
 
-// Implementation of the at() method
+// Implementation of the at() method 
 template <typename T, typename Alloc>
 T& MyVector<T, Alloc>::at(std::size_t index) {
     if (index >= current_size) throw std::out_of_range("...");
     return data[index];
 }
 
-// Implementation of the reserve() method
+// Implementation of the reserve() method for lvalue
 template <typename T, typename Alloc>
 void MyVector<T, Alloc>::reserve(std::size_t new_capacity) {
     if (new_capacity > capacity) {
@@ -185,7 +185,7 @@ void MyVector<T, Alloc>::reserve(std::size_t new_capacity) {
         std::size_t i = 0;
         try {
             for (; i < current_size; ++i) {
-                traits::construct(alloc, new_data + i, std::move(data[i]));
+                traits::construct(alloc, new_data + i, data[i]);
             }
         }
         catch(...) {
@@ -233,17 +233,63 @@ void MyVector<T, Alloc>::resize(std::size_t new_size) {
     current_size = new_size;
 }
 
-// Implementation of the push_back() method
+// Implementation of the push_back() method for lvalue
 template <typename T, typename Alloc>
 void MyVector<T, Alloc>::push_back(const T& x) {
     using traits = std::allocator_traits<Alloc>; // Use allocator traits to access the allocator's methods
 
+    std::cout << "lvalue push_back()\n";
     if (current_size == capacity) {
         std::size_t new_capacity = capacity == 0 ? 1 : capacity * 2;
 
         reserve(new_capacity);
     }
     traits::construct(alloc, data + current_size, x);
+    ++current_size;
+}
+
+// Implementation of the overloading push_back() method for rvalue
+template <typename T, typename Alloc>
+void MyVector<T, Alloc>::push_back(T&& x) {
+    using traits = std::allocator_traits<Alloc>; // Use allocator traits to access the allocator's methods
+
+    if (current_size == capacity) {
+        std::size_t new_capacity = capacity == 0 ? 1 : capacity * 2;
+
+        if (new_capacity > capacity) {
+            std::cout << "rvalue push_back()\n";
+            using traits = std::allocator_traits<Alloc>;
+            // T* new_data = reinterpret_cast<T*>(new char[new_capacity * sizeof(T)]);
+            T* new_data = traits::allocate(alloc, new_capacity);
+
+            // Move the existing elements to the new array
+            std::size_t i = 0;
+            try {
+                for (; i < current_size; ++i) {
+                    traits::construct(alloc, new_data + i, std::move(data[i]));
+                }
+            }
+            catch(...) {
+                while (i > 0) {
+                    --i;
+                    traits::destroy(alloc, new_data + i);
+                }
+
+                traits::deallocate(alloc, new_data, new_capacity);
+                throw;
+            }
+
+            // Destroy the old elements and deallocate the old array
+            for (std::size_t i = 0; i < current_size; ++i) {
+                traits::destroy(alloc, data + i);
+            }
+            
+            traits::deallocate(alloc, data, capacity);
+            data = new_data;
+            capacity = new_capacity;
+        }
+    }
+    traits::construct(alloc, data + current_size, std::move(x));
     ++current_size;
 }
 

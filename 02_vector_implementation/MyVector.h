@@ -25,6 +25,7 @@ public:
     void reserve(std::size_t new_capacity);
 
     void push_back(const T& value);
+    void push_back(T&& value); // overloading 
     void pop_back();
 
     void shrink_to_fit();
