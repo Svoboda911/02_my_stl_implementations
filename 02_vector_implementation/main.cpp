@@ -20,6 +20,8 @@ int main() {
     a.push_back(5); // rvalue
     a.push_back(x); // lvalue
 
+    a.assign(5, 10);
+
     for (int i = 0; i < a.size(); i++) {
         std::cout << a[i] << std::endl;
     }

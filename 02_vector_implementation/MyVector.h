@@ -28,6 +28,8 @@ public:
     void push_back(T&& value); // overloading 
     void pop_back();
 
+    void assign(size_t count, const T& value);
+
     void shrink_to_fit();
 
     template <typename... Args>

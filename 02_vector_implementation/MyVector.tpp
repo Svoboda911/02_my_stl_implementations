@@ -238,7 +238,7 @@ template <typename T, typename Alloc>
 void MyVector<T, Alloc>::push_back(const T& x) {
     using traits = std::allocator_traits<Alloc>; // Use allocator traits to access the allocator's methods
 
-    std::cout << "lvalue push_back()\n";
+    
     if (current_size == capacity) {
         std::size_t new_capacity = capacity == 0 ? 1 : capacity * 2;
 
@@ -302,6 +302,74 @@ void MyVector<T, Alloc>::pop_back() {
 
     --current_size;
     traits::destroy(alloc, data + current_size);
+}
+
+// Implementation of the assign() method 
+template <typename T, typename Alloc>
+void MyVector<T, Alloc>::assign(size_t count, const T& value) {
+    using traits = std::allocator_traits<Alloc>;
+
+    if (count > capacity) {
+        std::size_t new_capacity = count * 2;
+
+        T value_copy = value;
+        T* new_data = traits::allocate(alloc, new_capacity);
+
+        size_t i = 0;
+        try {
+            for (; i < count; ++i) {
+                traits::construct(alloc, new_data + i, value_copy);
+            }      
+        }
+        catch(...) {
+            while (i > 0) {
+                --i;
+                traits::destroy(alloc, new_data + i);
+            }
+
+            traits::deallocate(alloc, new_data, new_capacity);
+
+            throw;
+        }
+
+        // Destroy the old elements and deallocate the old array
+        for (std::size_t i = 0; i < current_size; ++i) {
+            traits::destroy(alloc, data + i);
+        }
+
+        if (data != nullptr)
+            traits::deallocate(alloc, data, capacity);
+        
+        data = new_data;
+        capacity = new_capacity;
+        current_size = count;
+
+        return;
+    }
+    T value_copy = value;
+
+    // Destroy the old elements and deallocate the old array
+    for (size_t i = 0; i < current_size; ++i) {
+        traits::destroy(alloc, data + i);
+    }
+
+    size_t i = 0;
+    try {  
+        for (; i < count; ++i) {
+            traits::construct(alloc, data + i, value_copy);
+        }
+    }
+    catch(...) {
+        while (i > 0) {
+            --i;
+            traits::destroy(alloc, data + i);
+        }
+
+        traits::deallocate(alloc, data, capacity);
+        throw;
+    }
+
+    current_size = count;
 }
 
 // Implementation of the emplace_back() method
